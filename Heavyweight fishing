@@ -1,0 +1,333 @@
+-- [[ ★ PPINGYYY HUB - BẢN WINDUI + RÚT GỌN ★ ]] --
+
+-- Tải thư viện WindUI (giao diện đẹp)
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/source.lua"))()
+
+local lp = game:GetService("Players").LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+
+-- ⚙️ CẤU HÌNH
+getgenv().NWKZ_Anchor = false
+getgenv().NWKZ_AutoCast = false
+getgenv().PP_Noclip = false
+getgenv().PP_WalkSpeed = 16
+getgenv().PP_FishingThipActive = false
+getgenv().PP_AutoSkillAll = false
+getgenv().PP_Skill_Z = false
+getgenv().PP_Skill_X = false
+getgenv().PP_Skill_C = false
+getgenv().PP_Skill_V = false
+
+-- 🪟 TẠO CỬA SỔ WINDUI
+local Window = WindUI:CreateWindow({
+    Name = "🌟 PPINGYYY HUB",        -- Tên cửa sổ
+    Icon = "rbxassetid://6031095056", -- Icon (có thể đổi)
+    Size = UDim2.new(0, 500, 0, 400)  -- Kích thước
+})
+
+-- 🎣 TAB 1: CÂU CÁ
+local Tab1 = Window:CreateTab({
+    Name = "🎣 Câu Cá"
+})
+
+-- Nút Tự động thả câu
+Tab1:CreateToggle({
+    Name = "Tự Động Thả Câu",
+    Default = false,
+    Callback = function(value)
+        getgenv().NWKZ_AutoCast = value
+    end
+})
+
+-- Nút khóa Đá
+Tab1:CreateToggle({
+    Name = "Giữ Thanh Bar (Auto Anchor)",
+    Default = false,
+    Callback = function(value)
+        getgenv().NWKZ_Anchor = value
+    end
+})
+
+-- Nút bán cá
+Tab1:CreateButton({
+    Name = "💰 Bán Tất Cả Cá",
+    Callback = function()
+        pcall(function()
+            if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("SellFish") then
+                RS.Events.SellFish:FireServer("All")
+            elseif RS:FindFirstChild("SellFish") then
+                RS.SellFish:FireServer("All")
+            end
+        end)
+        WindUI:Notify("Đã bán toàn bộ cá!", 3)
+    end
+})
+
+-- ⚡ TAB 2: KỸ NĂNG
+local Tab2 = Window:CreateTab({
+    Name = "⚡ Kỹ Năng"
+})
+
+-- Bật tất cả kỹ năng
+Tab2:CreateToggle({
+    Name = "Tự Động Tất Cả Kỹ Năng",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_AutoSkillAll = value
+    end
+})
+
+-- Từng kỹ năng riêng lẻ
+Tab2:CreateToggle({
+    Name = "Tự Động Kỹ Năng Z",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_Skill_Z = value
+    end
+})
+
+Tab2:CreateToggle({
+    Name = "Tự Động Kỹ Năng X",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_Skill_X = value
+    end
+})
+
+Tab2:CreateToggle({
+    Name = "Tự Động Kỹ Năng C",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_Skill_C = value
+    end
+})
+
+Tab2:CreateToggle({
+    Name = "Tự Động Kỹ Năng V",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_Skill_V = value
+    end
+})
+
+-- 🛠️ TAB 3: CÔNG CỤ
+local Tab3 = Window:CreateTab({
+    Name = "🛠️ Công Cụ"
+})
+
+-- Noclip
+Tab3:CreateToggle({
+    Name = "Xuyên Tường (Noclip)",
+    Default = false,
+    Callback = function(value)
+        getgenv().PP_Noclip = value
+    end
+})
+
+-- Điều chỉnh tốc độ
+Tab3:CreateSlider({
+    Name = "Tốc Độ Di Chuyển",
+    Default = 46,
+    Min = 16,
+    Max = 250,
+    Callback = function(value)
+        getgenv().PP_WalkSpeed = value
+        if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+            lp.Character.Humanoid.WalkSpeed = value
+        end
+    end
+})
+
+-- Nút bật Fly (gọi script fly bên ngoài)
+Tab3:CreateButton({
+    Name = "🚀 Mở Menu Bay",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V11-205450"))()
+        end)
+        WindUI:Notify("Đã tải Fly GUI!", 3)
+    end
+})
+
+-- 🏝️ TAB 4: DỊCH CHUYỂN
+local Tab4 = Window:CreateTab({
+    Name = "🏝️ Dịch Chuyển"
+})
+
+-- Hàm tạo nút teleport
+local function addTeleport(tab, name, x, y, z)
+    tab:CreateButton({
+        Name = "🏝️ " .. name,
+        Callback = function()
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+                WindUI:Notify("Đã dịch chuyển đến " .. name, 2)
+            end
+        end
+    })
+end
+
+-- Thêm các điểm dịch chuyển
+addTeleport(Tab4, "Đảo Khởi Đầu", -236, 6, 56)
+addTeleport(Tab4, "Đảo Tre", -1226, 5, -23)
+addTeleport(Tab4, "Hố Khổng Lồ", 74, 6, 1216)
+addTeleport(Tab4, "Đảo Thác Nước", -1285, 6, 1240)
+addTeleport(Tab4, "Đảo Cá Đuối", -47, 9, -1337)
+addTeleport(Tab4, "Đảo Băng", -1348, 9, -1485)
+addTeleport(Tab4, "Đảo Dừa", 1434, 9, -1433)
+addTeleport(Tab4, "Đảo Mùa Thu", 1243, 6, 1393)
+addTeleport(Tab4, "Đảo Săn Boss", 1543, 46, -51)
+addTeleport(Tab4, "Đảo Hoang", 2631, 6, 60)
+
+-- 📍 TAB 5: THƯƠNG NHÂN BÍ MẬT
+local Tab5 = Window:CreateTab({
+    Name = "📍 Thương Nhân"
+})
+
+-- Tự động tìm thương nhân
+Tab5:CreateButton({
+    Name = "📍 Tìm & Dịch Chuyển Đến Thương Nhân",
+    Callback = function()
+        local char = lp.Character or lp.CharacterAdded:Wait()
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        
+        local found = false
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and (string.find(string.lower(obj.Name), "merchant") or string.find(string.lower(obj.Name), "traveling") or string.find(string.lower(obj.Name), "secret")) then
+                local targetHrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("PrimaryPart")
+                if targetHrp then
+                    hrp.CFrame = targetHrp.CFrame * CFrame.new(0, 0, -3)
+                    found = true
+                    WindUI:Notify("Đã tìm thấy thương nhân!", 3)
+                    break
+                end
+            end
+        end
+        
+        if not found then
+            WindUI:Notify("Không tìm thấy thương nhân!", 3)
+        end
+    end
+})
+
+-- Các điểm thương nhân cố định
+local function addMerchantTP(tab, name, x, y, z)
+    tab:CreateButton({
+        Name = "📍 " .. name,
+        Callback = function()
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+                WindUI:Notify("Đã dịch chuyển đến " .. name, 2)
+            end
+        end
+    })
+end
+
+addMerchantTP(Tab5, "Thương Nhân - Điểm 1", -33, 8, 1606)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 2", -1496, 9, 1134)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 3", -1528, 6, -1311)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 4", 1293, 8, 1428)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 5", 1592, 47, -44)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 6", -178, 6, -1268)
+addMerchantTP(Tab5, "Thương Nhân - Điểm 7", 2861, 6, 121)
+
+-- 🚀 VÒNG LẶP NỀN
+-- Tự động thả câu
+task.spawn(function()
+    while task.wait(0.3) do
+        if getgenv().NWKZ_AutoCast then
+            pcall(function()
+                if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then
+                    RS.Events.Fishing:FireServer()
+                elseif RS:FindFirstChild("Fishing") then
+                    RS.Fishing:FireServer()
+                end
+            end)
+        end
+    end
+end)
+
+-- Tự động giữ thanh bar
+RunService.RenderStepped:Connect(function()
+    if getgenv().NWKZ_Anchor then
+        pcall(function()
+            local playerGui = lp:FindFirstChild("PlayerGui")
+            if not playerGui then return end
+            
+            local fishingUI = (playerGui:FindFirstChild("MainGui") and playerGui.MainGui:FindFirstChild("Fishing")) 
+                or playerGui:FindFirstChild("Fishing") 
+                or playerGui:FindFirstChild("FishingUI")
+            
+            if fishingUI and fishingUI.Visible then
+                local barFrame = fishingUI:FindFirstChild("FishingBar") or fishingUI:FindFirstChild("BarFrame") or fishingUI:FindFirstChild("Bar")
+                if barFrame then
+                    local bar = barFrame:FindFirstChild("Bar") or barFrame:FindFirstChild("Slider") or barFrame:FindFirstChild("Progress") or barFrame:FindFirstChild("Pointer")
+                    if bar and bar:IsA("GuiObject") then
+                        bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0)
+                    end
+                end
+                
+                if RS:FindFirstChild("Fishing") then
+                    RS.Fishing:FireServer("1")
+                elseif RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then
+                    RS.Events.Fishing:FireServer("1")
+                end
+            end
+        end)
+    end
+end)
+
+-- Tự động dùng kỹ năng
+task.spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_Z then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game)
+            end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_X then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game)
+            end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_C then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+            end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_V then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game)
+            end
+        end)
+    end
+end)
+
+-- Noclip & Speed (chạy nền)
+RunService.Stepped:Connect(function()
+    pcall(function()
+        local char = lp.Character
+        if char and char:FindFirstChild("Humanoid") then
+            if getgenv().PP_WalkSpeed then
+                char.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed
+            end
+        end
+        if getgenv().PP_Noclip and char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end)
+
+print("🌟 PPINGYYY HUB (WindUI) đã tải thành công!")
+WindUI:Notify("🌟 PPINGYYY HUB đã sẵn sàng!", 3)
